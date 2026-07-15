@@ -6,6 +6,7 @@
 > 本页是索引（Map of Content），概念细节在下方各链接页面。
 
 ## 核心概念
+- [[PaiCLI-Demo-ReAct与ToolCall从零实现]] —— 5 文件极简复刻：LlmClient 数据模型 → GLMClient 通信 → ToolRegistry 工具仓库 → Agent ReAct 循环 → Main REPL
 - [[RAG语义检索]] —— JavaParser 多粒度分块 + Embedding + SQLite + 三级混合检索，封装为 `search_code`
 - [[MCP与JSON-RPC]] —— 手写 JSON-RPC 2.0 客户端、stdio/HTTP 双传输、守护线程、SSRF 防护
 - [[Function Calling工具定义]] —— 工具的 name / description / parameters 各自回答什么问题
@@ -33,3 +34,4 @@
 - 2026-07-10 手动入库：ReAct 系列 3 页——[[ReAct主循环]]（Agent.run 结构）/ [[ReAct循环退出条件]]（为何交 LLM 而非固定轮数）/ [[ReAct循环保险阀]]（取消>停滞>Token>硬轮数四阀优先级，含纠错：停滞是严格连续相同签名判定、Token 阀默认关闭），各含内联样式 SVG（react-main-loop / react-exit-condition / react-safety-valves）
 - 2026-07-11 手动入库：[[并行工具执行与HITL]]（FixedThreadPool(4) 并行执行 × synchronized requestApproval 弹窗串行化 × 双层超时：单工具命令超时 + 批次 invokeAll 90s；结果按原序回填 history），含 parallel-hitl-timeout.svg；行号已回源验证 ToolRegistry.java:63/1226/1227/1246、Agent.java:678/217-220
 - 2026-07-11 手动入库：[[守护线程-Daemon]]（ToolRegistry.java:1226-1231 线程工厂 t.setDaemon(true)；全量干活线程均为 daemon，仅 main 入口与 Main.java:292/324/326/879 四个 shutdown hook 非 daemon；三道退出防御：finally{shutdownNow()} + daemon 兜底强杀 + shutdown hook 清理），含 daemon-jvm-exit.svg；行号已回源验证 ToolRegistry.java:1229/1277、Main.java:292/324/326/879/1051/1112、McpServerManager.java:95/176、StdioTransport.java:141/160 等
+- 2026-07-15 手动入库：[[PaiCLI-Demo-ReAct与ToolCall从零实现]]——基于 paicli-demo 项目，5 文件从零实现 ReAct Agent + Tool Call，含 LlmClient 数据模型（Record/工厂方法/嵌套 record）、GLMClient 通信（SSE 流式解析）、ToolRegistry 工具仓库（JSON Schema/ConcurrentHashMap）、Agent ReAct 循环（conversationHistory 状态载体/MAX_ITERATIONS 安全网）、Main REPL 总装；附与原版 PaiCLI 对比表
