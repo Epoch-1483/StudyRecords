@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 400" width="100%" role="img">
+<rect width="680" height="400" fill="#f8f9fa"/>
+
+<text x="340" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#1f3a5f" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">反爬是分层防御：Chrome CDP 只破最外层</text>
+<text x="340" y="52" text-anchor="middle" font-size="11" fill="#666" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">反爬的本质是「提高抓取成本」而非造一堵墙</text>
+
+<!-- 层 ① -->
+<rect x="40" y="70" width="480" height="48" rx="8" fill="#e6f4ea" stroke="#34a853" stroke-width="1.2"/>
+<text x="56" y="98" font-size="13" font-weight="600" fill="#137333" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">① JS 动态渲染（SPA 空壳 HTML）</text>
+<rect x="532" y="72" width="112" height="44" rx="22" fill="#d4edda" stroke="#34a853" stroke-width="1"/>
+<text x="588" y="99" text-anchor="middle" font-size="12" font-weight="700" fill="#155724" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">CDP &#x2713;</text>
+
+<!-- 层 ② -->
+<rect x="40" y="128" width="480" height="48" rx="8" fill="#fff8e1" stroke="#f9a825" stroke-width="1.2"/>
+<text x="56" y="156" font-size="13" font-weight="600" fill="#e65100" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">② 浏览器指纹 / 无头检测（WebGL/Canvas/navigator.webdriver）</text>
+<rect x="532" y="130" width="112" height="44" rx="22" fill="#fff3cd" stroke="#f9a825" stroke-width="1"/>
+<text x="588" y="157" text-anchor="middle" font-size="12" font-weight="700" fill="#856404" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">CDP &#x2717;</text>
+
+<!-- 层 ③ -->
+<rect x="40" y="186" width="480" height="48" rx="8" fill="#fce4ec" stroke="#e91e63" stroke-width="1.2"/>
+<text x="56" y="214" font-size="13" font-weight="600" fill="#c2185b" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">③ 登录墙 / 验证码 / 行为风控（频率/鼠标轨迹/停留时长）</text>
+<rect x="532" y="188" width="112" height="44" rx="22" fill="#f8d7da" stroke="#dc3545" stroke-width="1"/>
+<text x="588" y="215" text-anchor="middle" font-size="12" font-weight="700" fill="#721c24" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">CDP &#x2717;</text>
+
+<!-- 层 ④ -->
+<rect x="40" y="244" width="480" height="48" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.2"/>
+<text x="56" y="272" font-size="13" font-weight="600" fill="#6a1b9a" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">④ IP 封禁 / 代理池需求 / 法律合规（robots.txt / ToS）</text>
+<rect x="532" y="246" width="112" height="44" rx="22" fill="#e2d5f1" stroke="#7b1fa2" stroke-width="1"/>
+<text x="588" y="273" text-anchor="middle" font-size="12" font-weight="700" fill="#4a148c" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">CDP &#x2717;</text>
+
+<!-- 右侧连接线 -->
+<line x1="520" y1="94" x2="532" y2="94" stroke="#ccc" stroke-width="1"/>
+<line x1="520" y1="152" x2="532" y2="152" stroke="#ccc" stroke-width="1"/>
+<line x1="520" y1="210" x2="532" y2="210" stroke="#ccc" stroke-width="1"/>
+<line x1="520" y1="268" x2="532" y2="268" stroke="#ccc" stroke-width="1"/>
+
+<!-- 底部总结 -->
+<rect x="30" y="310" width="620" height="78" rx="8" fill="#fff" stroke="#e0e0e0" stroke-width="1"/>
+
+<text x="46" y="334" font-size="11.5" fill="#c5221f" font-weight="600" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">&#x26A0; headless Chrome 本身就是强 bot 信号</text>
+<text x="46" y="352" font-size="10.5" fill="#555" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">navigator.webdriver === true、没有鼠标轨迹、Canvas/WebGL 哈希与真人不同——反而比裸 HTTP 更容易被识别。</text>
+
+<text x="46" y="374" font-size="11.5" fill="#1565c0" font-weight="600" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">&#x25B6; PaiCLI 的 browser_connect 定位</text>
+<text x="280" y="374" font-size="10.5" fill="#555" font-family="-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif">「渲染 SPA 获取 DOM」，不是「对抗反爬」。遇到 ②~④ 仍会被拦。</text>
+</svg>

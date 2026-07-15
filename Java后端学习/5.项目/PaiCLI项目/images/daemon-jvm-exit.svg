@@ -1,0 +1,55 @@
+<svg viewBox="0 0 680 600" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="680" height="600" fill="#f7f8fa"/>
+  <text x="340" y="34" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#1f2933">守护线程 vs 用户线程：JVM 退出行为</text>
+  <text x="340" y="58" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#52606d">thread.setDaemon(true) 决定一条线程是「守护」还是「用户」</text>
+
+  <rect x="250" y="78" width="180" height="46" rx="8" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.5"/>
+  <text x="340" y="100" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#1f2933">setDaemon(true) ?</text>
+  <text x="340" y="116" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#7b8794">ToolRegistry.java:1229（线程工厂）</text>
+
+  <rect x="36" y="150" width="290" height="210" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+  <rect x="36" y="150" width="290" height="40" rx="10" fill="#e4e7eb"/>
+  <text x="181" y="175" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#1f2933">用户线程（non-daemon）</text>
+  <text x="56" y="212" font-family="sans-serif" font-size="13" fill="#323f4b">· JVM 退出时必须等它跑完</text>
+  <text x="56" y="240" font-family="sans-serif" font-size="13" fill="#323f4b">· 典型：main 入口线程</text>
+  <text x="56" y="268" font-family="sans-serif" font-size="13" fill="#323f4b">· 典型：4 个 shutdown hook</text>
+  <text x="56" y="296" font-family="sans-serif" font-size="13" fill="#323f4b">  （Main.java:292/324/326/879）</text>
+  <rect x="56" y="318" width="250" height="30" rx="6" fill="#fde8e8"/>
+  <text x="181" y="338" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#c53030">退出时阻塞 → 进程关不掉</text>
+
+  <rect x="354" y="150" width="290" height="210" rx="10" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+  <rect x="354" y="150" width="290" height="40" rx="10" fill="#d6f0e0"/>
+  <text x="499" y="175" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#1f2933">守护线程（daemon）</text>
+  <text x="374" y="212" font-family="sans-serif" font-size="13" fill="#323f4b">· JVM 退出时直接强杀，不等</text>
+  <text x="374" y="240" font-family="sans-serif" font-size="13" fill="#323f4b">· 典型：PaiCLI 全部工具线程</text>
+  <text x="374" y="268" font-family="sans-serif" font-size="13" fill="#323f4b">  （tool-executor / plan-executor /</text>
+  <text x="374" y="290" font-family="sans-serif" font-size="13" fill="#323f4b">   multi-agent / mcp-* / ...）</text>
+  <rect x="374" y="318" width="250" height="30" rx="6" fill="#e3f9e5"/>
+  <text x="499" y="338" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#18794e">退出时干净结束，不残留</text>
+
+  <line x1="258" y1="124" x2="172" y2="150" stroke="#9aa5b1" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="422" y1="124" x2="508" y2="150" stroke="#9aa5b1" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <text x="36" y="402" font-family="sans-serif" font-size="14" font-weight="700" fill="#1f2933">PaiCLI 的三道退出防御</text>
+
+  <rect x="36" y="416" width="608" height="46" rx="8" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.5"/>
+  <text x="52" y="436" font-family="sans-serif" font-size="13" font-weight="700" fill="#1f2933">① 正常路径</text>
+  <text x="160" y="436" font-family="sans-serif" font-size="13" fill="#323f4b">finally { executor.shutdownNow() }（ToolRegistry.java:1277）优雅关闭线程池</text>
+  <text x="52" y="454" font-family="sans-serif" font-size="11" fill="#7b8794">执行完工具后显式关池，正常流程不依赖 JVM 强杀</text>
+
+  <rect x="36" y="470" width="608" height="46" rx="8" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.5"/>
+  <text x="52" y="490" font-family="sans-serif" font-size="13" font-weight="700" fill="#1f2933">② 异常兜底</text>
+  <text x="160" y="490" font-family="sans-serif" font-size="13" fill="#323f4b">所有干活线程 setDaemon(true) —— shutdownNow 没跑到时 JVM 退出仍强杀残留</text>
+  <text x="52" y="508" font-family="sans-serif" font-size="11" fill="#7b8794">兜底保证进程绝不因工具线程卡死而关不掉</text>
+
+  <rect x="36" y="524" width="608" height="46" rx="8" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.5"/>
+  <text x="52" y="544" font-family="sans-serif" font-size="13" font-weight="700" fill="#1f2933">③ 退出清理</text>
+  <text x="160" y="544" font-family="sans-serif" font-size="13" fill="#323f4b">4 个 shutdown hook（Main.java:292/324/326/879）跑必须完成的收尾</text>
+  <text x="52" y="562" font-family="sans-serif" font-size="11" fill="#7b8794">关 MCP server / 刷任务状态 / 停微信通道 —— 这些不能放 daemon（须跑完）</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#9aa5b1"/>
+    </marker>
+  </defs>
+</svg>

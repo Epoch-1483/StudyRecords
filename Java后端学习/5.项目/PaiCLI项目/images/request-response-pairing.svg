@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 620" font-family="-apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif">
+  <rect width="680" height="620" fill="#f7f8fa"/>
+
+  <!-- 标题 -->
+  <text x="340" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#1f3a5f">请求 / 响应配对的两套机制</text>
+  <text x="340" y="52" text-anchor="middle" font-size="12" fill="#57606a">本质相同：发请求生成唯一 id → 登记 → 收响应按 id 取回配对</text>
+
+  <!-- ===== 左卡片：ReAct 同步配对 ===== -->
+  <rect x="20" y="70" width="310" height="330" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <!-- 左卡片头部 -->
+  <path d="M20 80 a10 10 0 0 1 10 -10 H320 a10 10 0 0 1 10 10 v22 H20 Z" fill="#e8f0fe"/>
+  <text x="175" y="96" text-anchor="middle" font-size="14" font-weight="700" fill="#1a56a8">① ReAct 对话层（同步配对）</text>
+
+  <!-- 步骤 1 -->
+  <circle cx="44" cy="138" r="11" fill="#1a56a8"/>
+  <text x="44" y="142" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">1</text>
+  <text x="64" y="134" font-size="11.5" fill="#24292f">LLM 返回 tool_calls[].id</text>
+  <text x="64" y="150" font-size="10" fill="#57606a">模型生成的唯一标识符</text>
+
+  <!-- 步骤 2 -->
+  <circle cx="44" cy="180" r="11" fill="#1a56a8"/>
+  <text x="44" y="184" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">2</text>
+  <text x="64" y="176" font-size="11.5" fill="#24292f">Agent.java:204 存 assistant 消息（保留 id）</text>
+  <text x="64" y="192" font-size="10" fill="#57606a">conversationHistory.add(Message.assistant(...))</text>
+
+  <!-- 步骤 3 -->
+  <circle cx="44" cy="222" r="11" fill="#1a56a8"/>
+  <text x="44" y="226" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">3</text>
+  <text x="64" y="218" font-size="11.5" fill="#24292f">Agent.java:216 执行工具</text>
+  <text x="64" y="234" font-size="10" fill="#57606a">executeToolCalls(response.toolCalls())</text>
+
+  <!-- 步骤 4 -->
+  <circle cx="44" cy="264" r="11" fill="#1a56a8"/>
+  <text x="44" y="268" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">4</text>
+  <text x="64" y="260" font-size="11.5" fill="#24292f">Agent.java:219 用 toolResult.id() 回写</text>
+  <text x="64" y="276" font-size="10" fill="#57606a">Message.tool(id, result) 配对回填</text>
+
+  <!-- 步骤 5 -->
+  <circle cx="44" cy="306" r="11" fill="#1a56a8"/>
+  <text x="44" y="310" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">5</text>
+  <text x="64" y="302" font-size="11.5" fill="#24292f">AbstractOpenAiCompatibleClient.java:257</text>
+  <text x="64" y="318" font-size="10" fill="#57606a">序列化 tool_call_id（API 强制匹配）</text>
+
+  <!-- 左卡片特点框 -->
+  <rect x="36" y="340" width="278" height="48" rx="6" fill="#eaf6ec" stroke="#7bc47f" stroke-width="1"/>
+  <text x="48" y="358" font-size="10.5" fill="#1a7f37" font-weight="700">特点</text>
+  <text x="48" y="374" font-size="10" fill="#24292f">同线程同步完成，只为满足对话 API 的 schema 正确性</text>
+
+  <!-- ===== 右卡片：JSON-RPC 异步配对 ===== -->
+  <rect x="350" y="70" width="310" height="330" rx="10" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+  <!-- 右卡片头部 -->
+  <path d="M350 80 a10 10 0 0 1 10 -10 H620 a10 10 0 0 1 10 10 v22 H350 Z" fill="#fde8e8"/>
+  <text x="505" y="96" text-anchor="middle" font-size="14" font-weight="700" fill="#a8261a">② MCP JSON-RPC 层（异步配对）</text>
+
+  <!-- 步骤 1 -->
+  <circle cx="374" cy="138" r="11" fill="#a8261a"/>
+  <text x="374" y="142" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">1</text>
+  <text x="394" y="134" font-size="11.5" fill="#24292f">JsonRpcClient.java:28 生成单号</text>
+  <text x="394" y="150" font-size="10" fill="#57606a">AtomicLong ids 自增 id 生成器</text>
+
+  <!-- 步骤 2 -->
+  <circle cx="374" cy="180" r="11" fill="#a8261a"/>
+  <text x="374" y="184" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">2</text>
+  <text x="394" y="176" font-size="11.5" fill="#24292f">:53 取 id 写进请求体</text>
+  <text x="394" y="192" font-size="10" fill="#57606a">id = ids.getAndIncrement()</text>
+
+  <!-- 步骤 3 -->
+  <circle cx="374" cy="222" r="11" fill="#a8261a"/>
+  <text x="374" y="226" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">3</text>
+  <text x="394" y="218" font-size="11.5" fill="#24292f">:67 登记等待盒</text>
+  <text x="394" y="234" font-size="10" fill="#57606a">pending.put(id, future)</text>
+
+  <!-- 步骤 4 -->
+  <circle cx="374" cy="264" r="11" fill="#a8261a"/>
+  <text x="374" y="268" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">4</text>
+  <text x="394" y="260" font-size="11.5" fill="#24292f">:82 阻塞等响应</text>
+  <text x="394" y="276" font-size="10" fill="#57606a">future.get(timeout) 卡住调用方线程</text>
+
+  <!-- 步骤 5 -->
+  <circle cx="374" cy="306" r="11" fill="#a8261a"/>
+  <text x="374" y="310" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">5</text>
+  <text x="394" y="302" font-size="11.5" fill="#24292f">handleMessage :122 按 id 取回 future</text>
+  <text x="394" y="318" font-size="10" fill="#57606a">pending.remove(id) 唤醒；无 id 当通知(:114)</text>
+
+  <!-- 右卡片特点框 -->
+  <rect x="366" y="340" width="278" height="48" rx="6" fill="#fdf0e8" stroke="#e8a06a" stroke-width="1"/>
+  <text x="378" y="358" font-size="10.5" fill="#a8261a" font-weight="700">特点</text>
+  <text x="378" y="374" font-size="10" fill="#24292f">异步多路复用通道上区分并发请求，无 id 走通知</text>
+
+  <!-- ===== 底部共同内核（加大间距 + 三列不重叠）===== -->
+  <rect x="20" y="420" width="640" height="185" rx="10" fill="#fff8e1" stroke="#f0c14b" stroke-width="1.5"/>
+
+  <!-- 共同内核标题 -->
+  <text x="340" y="448" text-anchor="middle" font-size="14" font-weight="700" fill="#9a6700">共同内核（同一句话：唯一 id + 登记表 + 按 id 取回）</text>
+
+  <!-- 分隔线 -->
+  <line x1="40" y1="458" x2="640" y2="458" stroke="#f0c14b" stroke-width="0.8" stroke-opacity="0.5"/>
+
+  <!-- 列 1：唯一 id -->
+  <text x="40" y="480" font-size="12" font-weight="700" fill="#24292f">唯一 id</text>
+  <text x="40" y="498" font-size="10.5" fill="#57606a">
+    <tspan x="40" dy="0">tool_call.id（LLM 生成）</tspan>
+    <tspan x="40" dy="16">ids.getAndIncrement()（自增）</tspan>
+  </text>
+
+  <!-- 列 2：登记表 -->
+  <text x="250" y="480" font-size="12" font-weight="700" fill="#24292f">登记表</text>
+  <text x="250" y="498" font-size="10.5" fill="#57606a">
+    <tspan x="250" dy="0">对话历史 assistant/tool 消息对</tspan>
+    <tspan x="250" dy="16">pending map(id → CompletableFuture)</tspan>
+  </text>
+
+  <!-- 列 3：防错 -->
+  <text x="480" y="480" font-size="12" font-weight="700" fill="#24292f">防错机制</text>
+  <text x="480" y="498" font-size="10.5" fill="#57606a">
+    <tspan x="480" dy="0">API 强制 tool_call_id 匹配</tspan>
+    <tspan x="480" dy="16">pending.remove() 取空即丢弃</tspan>
+  </text>
+
+  <!-- 分隔线 2 -->
+  <line x1="40" y1="532" x2="640" y2="532" stroke="#f0c14b" stroke-width="0.8" stroke-opacity="0.5"/>
+
+  <!-- 区别说明（独立行，充足空间） -->
+  <text x="40" y="554" font-size="10.5" fill="#57606a">
+    <tspan>区别：ReAct 层为对话 API 的 schema 正确性；JSON-RPC 层为异步并发请求的多路复用区分。</tspan>
+  </text>
+
+  <!-- 关联概念（最底行） -->
+  <text x="40" y="582" font-size="10" fill="#9aa0a6">关联概念：Function Calling 工具定义 · MCP 与 JSON-RPC · HITL 审批</text>
+
+</svg>

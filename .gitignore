@@ -1,0 +1,38 @@
+# ============================================
+# StudyRecords - Git Ignore
+# ============================================
+
+# --- Obsidian 配置（含 API Key + SSL 私钥！） ---
+.obsidian/
+
+# --- WorkBuddy 工作记忆（含 API Key 等敏感记录）---
+.workbuddy/
+
+# --- 操作系统文件 ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- 编辑器/IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- 临时文件 ---
+*.tmp
+*.bak
+*_backup_*
+*.log
+
+# --- 垃圾桶（之前归集的残留）---
+_trash/
+
+# --- 大文件 / 参考文档（超 GitHub 100MB 限制 + 个人文件）---
+# Java核心技术·卷I.pdf = 267MB，超出 GitHub 单文件上限
+技术文档/
+# 简历 PDF（个人隐私，不适合公开仓库）
+简历/
+# 证件照
+证件照/
