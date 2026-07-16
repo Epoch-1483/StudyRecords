@@ -4,7 +4,7 @@
 
 LLM 一轮 `chat()` 可能同时返回多个 `tool_calls`。PaiCLI 用线程池并行执行以提速，但两类约束必须处理：**危险工具的 HITL 审批要串行化（同一时刻只能有一个弹窗）**，以及**任何工具都不能无限阻塞，需要双层超时兜底**。
 
-![并行工具调度 × HITL 串行化 × 双层超时](images/parallel-hitl-timeout.svg)
+![并行工具调度 × HITL 串行化 × 双层超时|637](images/parallel-hitl-timeout.svg)
 
 > 上图按 `ToolRegistry` / `Agent` / `TerminalHitlHandler` 真实代码绘制：LLM 返回 4 个 tool_calls → `executeTools()` 丢进 `FixedThreadPool(4)` → 危险工具经 `synchronized requestApproval` 排队串行过审批门，安全工具直接执行 → 各线程并行跑工具（不持锁）→ 结果与 tool_calls 原序回填 history。
 
